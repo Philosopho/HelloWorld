@@ -1,0 +1,82 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+bool ok(int b[], int c, int r){
+	for(int i=1; i <= c; i++){  // check  to the left horizontally
+		if(c - i < 0){
+			if(b[i - c] == r)
+				return false;
+		}
+		else{
+			if(b[c-i] == r)
+				return false;
+		}
+		
+	}
+	
+	for(int i=1; i <= c; i++){ // Check upwards diagonal
+		if(c - i < 0)
+		{
+			if(b[i - c] == (r - i))
+				return false;
+		}
+		else
+		{
+			if(b[c - i] == (r - i))
+				return false;
+		}
+	}
+	for(int i=1; i <= c; i++){ // Check downwards diagonal
+		if(c - i < 0)
+		{
+			if(b[i - c] == (r + i))
+				return false;
+		}
+		else
+		{
+			if(b[c - i] == (r + i))
+				return false;
+		}
+	}
+	return true;
+}
+void print(int q[], int max, int count){
+	cout << "Solution " << "#" <<  count << ": ";
+		for(int i = 0; i < max; i++){
+			cout << q[i];
+		}
+	cout << endl;
+}
+		
+
+int main(){
+	int b[8] = {}, c = 0 , r = 0, count = 0;
+	
+	b[c] = r;
+
+	
+		while(c >= 0){
+		      b[c++] = r;
+              if(c == 8){
+                 count++;
+                 print(b, c, count);
+                 b[c--];
+              }                     		
+          }
+          while(c >= 0){
+                b[c] = r++;
+                if(b[c] == 8){
+                    b[c--];
+                    break;
+                }
+                if(ok(b, c, r)){
+                    break;
+                }    
+          }
+system("PAUSE");
+return 0;
+}
+
+
+
