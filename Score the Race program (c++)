@@ -1,0 +1,91 @@
+#include <iostream>
+#include <algorithm>
+#include <cstring>
+#include <cstdlib>
+using namespace std;
+
+string get_teams(string a){
+	sort(a.begin(), a.end());
+	string newstring;
+	newstring += a[0];
+		for(int i = 0; i < a.length() - 1; i++){
+			if(a[i + 1] != a[i])
+			newstring += a[i + 1];
+		}
+		return newstring;
+}
+bool invalid(string a, string b){
+	int count = 0;
+	int totalteams = b.length();
+	int totalrunners = a.length();
+	for(int i = 0; i < b.length(); i++){
+		for(int j = 0; j < a.length(); j++){
+			if(a[j] == b[i])
+				count++;
+			}
+		if(count != totalrunners / totalteams)
+			return true;
+		count = 0;
+	}
+return false;
+}
+
+void score(string a, string b){
+		double totalteams = b.length();
+		double totalrunners = a.length();
+		double runnersperteam = totalrunners / totalteams;
+		double score[b.length()];
+		for(int i = 0; i < b.length(); i++){
+			for(int j = 0; j < a.length(); j++){
+				if(a[j] == b[i])
+					 score[i] += (j + 1);
+				if(j == a.length() - 1)
+					score[i] /= runnersperteam;
+			}
+		}
+		cout << "The total number of runners on each team is: " << runnersperteam << endl;
+		cout << "Team " << "\t" << "Score" << endl;
+		for(int i = 0; i < b.length(); i++){
+			cout << b[i] << "\t" << score[i] << endl;
+		}
+		double lowest = score[0]; // first element is assumed to be lowest until verification
+		char winner = b[0];	 // placeholder until verification.
+		for(int i = 0; i < b.length() - 1; i++){
+			if(score[i + 1] < score[i]){
+				lowest = score[i + 1];
+				winner = b[i + 1];
+			}
+			if(i ==  b.length() - 2)
+					cout << "The winner is team " << winner  << " with a score of " << lowest << endl;
+	}
+}
+
+int main(){
+	string race,teams;
+	
+	while(true){
+	
+	cout << "Please enter the outcome of the race: " << endl;
+	cin >> race;
+		if(race == "done")
+			return 0;
+	
+	teams = get_teams(race);
+     while(invalid(race, teams) || race.length() < 2){
+		cout << "Invalid. Unequal amount of runners on each team.  Enter again: ";
+		cin >> race;
+		if(race == "done")
+			return 0;
+		teams = get_teams(race);
+	}
+
+	cout << "There are " << teams.length() << " teams." << endl;
+	cout << "The teams are: " <<  teams << endl;
+	score(race, teams);
+
+}
+	return 0;
+	}
+
+
+
