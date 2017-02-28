@@ -1,0 +1,55 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+bool ok(int q[], int c, int max){
+	static int adj[8][5] ={{-1}, {0,-1},{0,1,-1},{0,2,-1},{1,2,-1},{1,2,3,4,-1},{2,3,5,-1},{4,5,6,-1}};
+	for(int i=0; i < c; i++){  // check  previous column if number is equal
+			if(q[i] == q[c])
+				return false;
+	}
+	for(int i=0; i < max; i++){ // Check adjacent squares
+		if(adj[c][i] == -1)
+			return true;
+		if(abs(q[c] - q[adj[c][i]]) == 1)
+					return false;
+	}
+}
+void print(int q[], int max){
+	int counter = 0;
+	static int count = 0;
+	count++;
+	cout << "Solution " << "#" <<  count << ": " << endl;
+			cout << " " << " " << q[1] << q[4] << endl << " " <<  q[0] << q[2] << q[5] << q[7] << endl << " " << " " << q[3] << q[6] << endl;
+}
+		
+
+int main(){
+	int q[8] = {}, c = 0;
+	
+	q[0] = 1;
+
+	while(c >= 0){
+		q[c++];
+		if(c == 8){
+			print(q, 8);
+			q[c--];
+		}
+		else{
+			q[c] = 0;
+		}
+		while(c >= 0){
+			q[c]++;
+			if(q[c] == 9){
+				q[c--];
+			}
+			else if(ok(q,c,8)){
+				break;
+			}
+		}
+	}
+return 0;
+}
+
+
+
