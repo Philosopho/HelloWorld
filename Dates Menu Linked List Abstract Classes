@@ -1,0 +1,603 @@
+import javax.swing.*;
+import java.awt.*;
+import java.util.StringTokenizer;
+public class DateGUI extends JFrame{
+   
+   DateGUI(String title, int height, int width){
+      super(title);
+      setSize(height,width);
+      setLocationRelativeTo(null);
+      createFileMenu();
+      setDefaultCloseOperation(EXIT_ON_CLOSE);
+      setVisible(true);
+public class Date212
+{
+   private int day;
+   private int year;
+   private int month;
+   
+   /**
+    * Created Date212 constructor with nMonth, nDay, nYear parameters.
+    *  nMonth,nDay,nYear have n in front to stand for new. The object
+    *  checks to see if the day, year, or month is valid before it is created.
+    */
+   Date212(int nYear, int nMonth, int nDay){
+      if(nMonth >= 13 || nMonth <= 0){ // I created the IllegalArgumentExceptions to prevent the entering of non-existent dates
+         throw new IllegalDate212Exception("There is no " + nMonth + " month");
+      }
+      if(nDay >= 32 || nDay <= 0){ 
+         throw new IllegalDate212Exception("There is no day " + nDay);
+      }
+      if(nMonth == 4 || nMonth == 6 || nMonth == 9 || nMonth == 11 ){
+         if(nDay > 30){
+            throw new IllegalDate212Exception("For this month, there is no day greater than 30.");
+         }
+      }
+         if(nMonth == 2){
+            if(nYear % 400 != 0){
+               if(nDay == 29){
+                  throw new IllegalDate212Exception("The year is not a leap year, therefore the day cannot be " + nDay + " for February");
+               }
+            }
+            if(nDay >= 30){
+               throw new IllegalDate212Exception("This day does not exist in February. Please try again");
+            }
+            
+         }
+      if(!(nYear <= 2016)){
+         throw new IllegalDate212Exception("This year does not exist");
+      }
+      setYear(nYear); setMonth(nMonth); setDay(nDay); // I prefer calling the set methods in the constructor to set the values so that the user can set values easier if they wish
+   }
+   
+   public String toString(){
+      if(getMonth() > 9 && getDay() > 9)
+         return getYear() + "/" + getMonth() + "/" + getDay();
+      else if(getMonth() <= 9 && getDay() <= 9)
+         return  getYear() + "/" + "0" + getMonth() + "/" + "0" + getDay();
+      else if(getDay() <= 9)
+         return getYear() + "/" + getMonth() + "/" + "0" + getDay();
+      else
+         return getYear() + "/" + "0" + getMonth() + "/" + getDay();
+   }
+   public int compareTo(Date212 other){
+      int monthValue = month - other.getMonth(); // I created a monthValue, a yearValue
+      int yearValue = year - other.getYear();   // and a dayValue, with yearValue taking
+      if(yearValue == 0){ // highest precedence, followed by month, so that I can compare the
+         if(monthValue == 0){ //  dates when inserting them in sorted order in the insertedList. 
+            return day - other.getDay();
+         }
+         else
+            return monthValue;
+            
+         }
+      return yearValue;
+   }
+   /**
+    * @param ndate means that the String accepts a new date, just like
+    * the other Date212 constructor.
+    */
+   Date212(String ndate){
+      this(Integer.parseInt(ndate.substring(0, 4)),
+           Integer.parseInt(ndate.substring(4,6)),
+            Integer.parseInt(ndate.substring(6,8)));
+   }
+   
+   public int getDay(){
+      return day;
+   }
+   public int getYear(){
+      return year;
+   }
+   public int getMonth(){
+      return month;
+   }
+   public void setYear(int nYear){
+      year = nYear;
+   }
+   public void setDay(int nDay){
+      day = nDay;
+   }
+   public void setMonth(int nMonth){
+      month = nMonth;
+   }
+}
+
+   }
+   private void createFileMenu( ) {
+      JMenuItem item;
+      JMenuBar menuBar  = new JMenuBar();
+      JMenu fileMenu = new JMenu("File");
+      FileMenuHandler fmh  = new FileMenuHandler(this);
+
+      item = new JMenuItem("Open");   
+      item.addActionListener( fmh );
+      fileMenu.add( item );
+
+      fileMenu.addSeparator();           
+    
+      item = new JMenuItem("Quit");       
+      item.addActionListener( fmh );
+      fileMenu.add( item );
+
+      setJMenuBar(menuBar);
+      menuBar.add(fileMenu);
+    
+   }
+}
+
+
+
+
+
+
+
+
+public abstract class DateList
+{
+   protected DateNode first;
+   protected DateNode last;
+   
+   /**
+    *  dn stands for default node. 
+    *  Default node has a value of null for its attributes.
+    */
+   DateList(){ // I used a constructor for DateList so that I can construct it as a
+      DateNode dn = new DateNode(); // super class for the sub classes
+      first = dn;
+      last = dn;
+   }
+   public abstract String toString();  // Decided to make all methods abstract
+  
+   public abstract void add(Date212 date); // I decided to make add an abstract method so
+                                           // that the two sub classes have their own
+                                           // definitions of the add method.
+ }
+ 
+
+
+public class DateNode
+{
+   protected Date212 data;
+   protected DateNode next;
+
+      DateNode(Date212 sentDate){
+         data = sentDate;
+         next = null;
+      }
+      DateNode(){
+         data = null;
+         next = null;
+      }
+      
+
+}
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.util.StringTokenizer;
+public class FileMenuHandler implements ActionListener {
+   JFrame jframe;
+   public FileMenuHandler (JFrame jf) {
+      jframe = jf;
+   }
+   public void actionPerformed(ActionEvent event) {
+      String  menuName;
+      menuName = event.getActionCommand();
+      if (menuName.equals("Open"))
+         openFile( ); 
+      else if (menuName.equals("Quit"))
+         System.exit(0);
+   }
+
+    private void openFile( ) {
+       JFileChooser chooser;
+       int status;
+       chooser = new JFileChooser( );
+       status = chooser.showOpenDialog(null);
+       if (status == JFileChooser.APPROVE_OPTION) 
+          readSource(chooser.getSelectedFile());
+       else 
+          JOptionPane.showMessageDialog(null, "Open File dialog canceled");
+    }
+  
+    private void readSource(File chosenFile) {
+       String chosenFileName = chosenFile.getPath();
+       TextFileInput inFile = new TextFileInput(chosenFileName);
+       String line; String date;
+       
+       Container myContentPane = jframe.getContentPane();
+       jframe.setLayout(new GridLayout(1,2));
+       TextArea textArea = new TextArea();
+       TextArea textArea2 = new TextArea();
+       myContentPane.add(textArea);
+       myContentPane.add(textArea2);
+       
+       SortedDateList sorted = new SortedDateList();
+       UnsortedDateList unsorted = new UnsortedDateList();
+       
+       line = inFile.readLine();
+       StringTokenizer st = new StringTokenizer(line,",");
+       while (line != null){
+          st = new StringTokenizer(line, ",");
+          while(st.hasMoreTokens()){
+             date = st.nextToken();
+                if(validDate(date)){
+                   try{
+                      Date212 dates = new Date212(date);
+                      sorted.add(dates);
+                      unsorted.add(dates);
+                      }
+                   catch(IllegalDate212Exception message){
+                      System.out.println(message + " The full invalid string is: " + date);
+                   }
+                }
+         }
+          line = inFile.readLine();
+       }
+     textArea.append("Sorted Dates" + "\n");
+     textArea.append(sorted.toString());
+     textArea2.append("Unsorted Dates" + "\n");
+     textArea2.append(unsorted.toString());
+     jframe.setVisible(true);
+     inFile.close();
+    }
+       public boolean validDate(String date){ // I created this method to check valid dates so that I can put the valid ones in the LinkedLists.
+          if(date.length() != 8){ // I must check to see if the string sent through is valid, if it is greater than 8 or less than 8 then return false.
+             System.out.println(date + " is not a valid date.");
+             return false;
+          }
+          else{
+             for(int i = 0; i < date.length(); i++){
+                if(! Character.isDigit(date.charAt(i))){ // even if the length is 8, there may not be a valid date sent through, a character could be one of the 8 characters, for example.
+                   System.out.println(date.charAt(i) + " is not valid for a date.");
+                   return false;
+                }
+             }
+          }
+          return true;
+       }
+}
+
+public class IllegalDate212Exception extends IllegalArgumentException
+{
+  public IllegalDate212Exception(String message){
+        super(message);
+  }
+}
+
+
+public class Project3
+{
+   static DateGUI theMenu;
+   public static void main(String[] args){  
+      theMenu = new DateGUI("The FIle Menu", 400, 400);
+   }
+}
+
+
+public class SortedDateList extends DateList
+{
+   /**
+    * @insert this method accepts a Date212 object
+    * I created two DateNodes, labeled a and b,
+    * where a and b stand for first and second
+    * in alphabet form.
+    */
+   SortedDateList(){
+      super();
+   }
+   public void add(Date212 date){
+      DateNode n = new DateNode(date);
+      DateNode a = first; // both a and b are node checkers from beginning of list
+      DateNode b = first.next; // and after first.
+      while(b != null){ // so I start with b != null so it can immediately insert a new date node since b
+         if(b.data.compareTo(n.data) >= 0){ // is null in beginning. After I need to compare the dates to see 
+            break; // which belongs in front to insert it there. If the new date is smaller
+         }          // then I want to break out of the loop and immediately put the new node between
+         else{ // the a(first dummy node) and b(after first dummy node)
+            b = b.next; // if not I want to traverse through the nodes with a and b 
+            a = a.next; // and keep checking.
+         }
+      }
+      if(b == null) // if b is == to null I need to update the dateNode called last, to keep
+         last = n; // the link in order
+      n.next = b; // before I assign the new date and insert it in the correct order, I need
+      a.next = n; // to maintain the link that comes after it is placed, so that's why
+   }            // I need to assign the new date node to b to keep the link, otherwise
+                  // if I only put a.next = n and if a new date node has to go in the front, 
+               // then the link after that will sever and be lost;   
+   
+   public String toString(){
+      DateNode p = first.next;
+      String returnString = "";
+         while (p != null) {
+            returnString += p.data + "\n";
+            p = p.next;
+         }
+      return returnString;
+   }
+}
+
+// TextFileInput.java
+// Copyright (c) 2000, 2005 Dorothy L. Nixon.  All rights reserved.
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
+
+/**
+ * Simplified buffered character input
+ * stream from an input text file.
+ * Manages an input text file,
+ * handling all IOExceptions by generating
+ * RuntimeExcpetions (run-time error
+ * messages).
+ *
+ * If the text file cannot be created,
+ * a RuntimeException is thrown,
+ * which by default results an an
+ * error message being printed to
+ * the standard error stream.
+ *
+ * @author D. Nixon
+ */
+public class TextFileInput  {
+
+   /**  Name of text file  */
+   private String filename;
+
+   /**  Buffered character stream from file  */
+   private BufferedReader br;  
+
+   /**  Count of lines read so far.  */
+   private int lineCount = 0;
+
+   /**
+    * Creates a buffered character input
+    * strea, for the specified text file.
+    *
+    * @param filename the input text file.
+    * @exception RuntimeException if an
+    *          IOException is thrown when
+    *          attempting to open the file.
+    */
+   public TextFileInput(String filename)
+   {
+      this.filename = filename;
+      try  {
+         br = new BufferedReader(
+                  new InputStreamReader(
+                      new FileInputStream(filename)));
+      } catch ( IOException ioe )  {
+         throw new RuntimeException(ioe);
+      }  // catch
+   }  // constructor
+
+   /**
+    * Closes this character input stream.
+    * No more characters can be read from
+    * this TextFileInput once it is closed.
+    * @exception NullPointerException if
+    *        the file is already closed.
+    * @exception RuntimeException if an
+    *       IOException is thrown when
+    *       closing the file.
+    */
+   public void close()
+   {
+      try  {
+         br.close();
+         br = null;
+      } catch ( NullPointerException npe )  {
+         throw new NullPointerException(
+                        filename + "already closed.");
+      } catch ( IOException ioe )  {
+         throw new RuntimeException(ioe);
+      }  // catch
+   }  // method close
+
+   /**
+    * Reads a line of text from the file and
+    * positions cursor at 0 for the next line.
+    * Reads from the current cursor position
+    * to end of line.
+    * Implementation does not invoke read.
+    *
+    * @return the line of text, with
+    *         end-of-line marker deleted.
+    * @exception RuntimeException if an
+    *          IOException is thrown when
+    *          attempting to read from the file.
+    */
+   public String readLine()
+   {
+      return readLineOriginal();
+   }  // method readLine()
+
+   /**
+    * Returns a count of lines
+    * read from the file so far.
+    */
+   public int getLineCount()  { return lineCount; }
+
+   /**
+    * Tests whether the specified character is equal,
+    * ignoring case, to one of the specified options.
+    *
+    * @param toBeChecked the character to be tested.
+    * @param options a set of characters
+    * @return true if <code>toBeChecked</code> is
+    *         equal, ignoring case, to one of the
+    *         <code>options</code>, false otherwise.
+    */
+   public static boolean isOneOf(char toBeChecked,
+                                 char[] options)
+   {
+      boolean oneOf = false;
+      for ( int i = 0; i < options.length && !oneOf; i++ )
+         if ( Character.toUpperCase(toBeChecked)
+                   == Character.toUpperCase(options[i]) )
+            oneOf = true;
+      return oneOf;
+   }  // method isOneOf(char, char[])
+
+   /**
+    * Tests whether the specified string is one of the
+    * specified options.  Checks whether the string
+    * contains the same sequence of characters (ignoring
+    * case) as one of the specified options.
+    *
+    * @param toBeChecked the String to be tested
+    * @param options a set of Strings
+    * @return true if <code>toBeChecked</code>
+    *         contains the same sequence of
+    *         characters, ignoring case, as one of the
+    *         <code>options</code>, false otherwise.
+    */
+   public static boolean isOneOf(String toBeChecked,
+                                 String[] options)
+   {
+      boolean oneOf = false;
+      for ( int i = 0; i < options.length && !oneOf; i++ )
+         if ( toBeChecked.equalsIgnoreCase(options[i]) )
+            oneOf = true;
+      return oneOf;
+   }  // method isOneOf(String, String[])
+ 
+   /**
+    * Reads a line from the text file and ensures that
+    * it matches one of a specified set of options.
+    *
+    * @param options array of permitted replies
+    *
+    * @return the line of text, if it contains the same
+    *         sequence of characters (ignoring case for
+    *         letters) as one of the specified options,
+    *         null otherwise.
+    * @exception RuntimeException if the line of text
+    *         does not match any of the specified options,
+    *         or if an IOException is thrown when reading
+    *         from the file.
+    * @exception NullPointerException if no options are
+    *         provided, or if the end of the file has been
+    *         reached.
+    */
+   public String readSelection(String[] options)
+   {
+      if ( options == null || options.length == 0 )
+         throw new NullPointerException(
+                            "No options provided for "
+                            + " selection to be read in file "
+                            + filename + ", line " 
+                            + (lineCount + 1) + ".");
+
+      String answer = readLine();
+
+      if ( answer == null )
+         throw new NullPointerException(
+                            "End of file "
+                            + filename + "has been reached.");
+
+      if ( !TextFileInput.isOneOf(answer, options) )  {
+         String optionString = options[0];
+         for ( int i = 1; i < options.length; i++ )
+            optionString += ", " + options[i];
+         throw new RuntimeException("File " + filename
+                            + ", line " + lineCount
+                            + ": \"" + answer
+                            + "\" not one of "
+                            + optionString + ".");
+      }  // if
+      return answer;
+  }  // method readSelection
+
+   /**
+    * Reads a line from the text file and ensures that
+    * it matches, ignoring case, one of "Y", "N", "yes",
+    * "no", "1", "0", "T", "F", "true", or "false".
+    * There must be no additional characters on the line.
+    *
+    * @return <code>true</code> if the line matches
+    *        "Y", "yes", "1" "T", or "true".
+    *        <code>false</code> if the line matches
+    *        "N", "no", "0", "F", or "false".
+    * @exception RuntimeException if the line of text
+    *        does not match one of "Y", "N", "yes",
+    *        "no", "1", "0", "T", "F", "true", or "false",
+    *        or if an IOException is thrown when reading
+    *        from the file.
+    * @exception NullPointerException if the end of the
+    *        file has been reached.
+    */
+   public boolean readBooleanSelection()
+   {
+      String[] options = {"Y", "N", "yes", "no", "1", "0",
+                          "T", "F", "true", "false"};
+      String answer = readSelection(options);
+      return isOneOf(answer,
+                     new String[] {"Y", "yes", "1", "T", "true"} );
+   }  // method askUserYesNo
+
+   /**
+    * Reads a line of text from the file and
+    * increments line count.  (This method
+    * is called by public readLine and is
+    * final to facilitate avoidance of side
+    * effects when public readLine is overridden.)
+    *
+    * @return the line of text, with
+    *         end-of-line marker deleted.
+    * @exception RuntimeException if an
+    *          IOException is thrown when
+    *          attempting to read from the file.
+    */
+   protected final String readLineOriginal()
+   {
+       try  {
+          if ( br == null )
+             throw new RuntimeException(
+                                "Cannot read from closed file "
+                                + filename + ".");
+          String line = br.readLine();
+          if ( line != null )
+             lineCount++;
+          return line;
+       } catch (IOException ioe)  {
+          throw new RuntimeException(ioe);
+       }  // catch
+   }  // method readLineOriginal
+}  // class TextFileInput
+
+
+
+public class UnsortedDateList extends DateList
+{
+   /**
+    * @append method that appends the object added
+    * to the end of the list. The n in DateNode object
+    * stands for new object(DateNode) 
+    */
+   
+   UnsortedDateList(){
+      super();
+   }
+   public void add(Date212 date){
+         DateNode n = new DateNode(date);
+         last.next = n;
+         last = n;
+   }
+   
+   public String toString(){
+      DateNode p = first.next;
+      String returnString = "";
+         while (p != null) {
+            returnString += p.data + "\n";
+            p = p.next;
+         }
+      return returnString;
+   }
+}
