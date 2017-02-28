@@ -9,23 +9,17 @@ bool ok(int q[], int c){
 			if(q[c] == q[i])
 				return false;
 	}
-	for(int j = 0; j < 3; j++){
-		for(int i = 0; i < 3; i++){
-			 if(j == i){ 
-				continue;
-			}
-			if(mp[j][q[i]] < mp[j][q[j]]){
-				if(wp[q[i]][j] < wp[q[j]][j]){
+	for(int i = 0; i < c; i++){
+			if(mp[i][q[c]] < mp[i][q[i]]){
+				if(wp[q[c]][i] < wp[q[c]][c]){
 					return false;
 				}
 			}
-			 if(mp[i][q[j]] < mp[j][j]){
-				if(wp[q[j]][i] < wp[q[j]][i]){
+			if(mp[c][q[i]] < mp[c][q[c]]){
+				if(wp[q[i]][c] < wp[q[i]][i]){
 					return false;
 				}
 			}
-		}
-	
 	}
 	return true;
 }
